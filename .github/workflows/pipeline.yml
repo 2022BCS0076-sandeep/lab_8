@@ -24,14 +24,18 @@ jobs:
 
     - name: Install Dependencies
       run: |
-        pip install dvc[s3]
-        pip install pandas scikit-learn
+        pip install dvc[s3] pandas scikit-learn awscli
 
-    - name: Add DVC Remote
-      run: dvc remote add -d s3remote s3://bcs76-lab8
+    - name: Verify AWS access
+      run: |
+        aws s3 ls
+
+    - name: Configure DVC Remote
+      run: |
+        dvc remote modify s3remote url s3://bcs76-lab8 || dvc remote add -d s3remote s3://bcs76-lab8
 
     - name: Pull Dataset from DVC
-      run: dvc pull
+      run: dvc pull -v
 
     - name: Train Model
       run: python src/train.py

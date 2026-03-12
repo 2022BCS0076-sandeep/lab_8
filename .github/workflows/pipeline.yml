@@ -30,14 +30,12 @@ jobs:
         AWS_DEFAULT_REGION: ap-south-1
       run: echo "AWS configured"
 
-    - name: Check DVC Repo
+    - name: Add DVC Remote
       run: |
-        pwd
-        ls -la
-        dvc doctor
+        dvc remote add -d s3remote s3://bcs76-lab8
 
     - name: Pull Dataset from DVC
-      run: dvc pull -r s3remote -v
+      run: dvc pull
 
     - name: Train Model
       run: python src/train.py

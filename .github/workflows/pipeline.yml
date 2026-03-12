@@ -11,8 +11,6 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
 
     - name: Setup Python
       uses: actions/setup-python@v4
@@ -32,8 +30,14 @@ jobs:
         AWS_DEFAULT_REGION: ap-south-1
       run: echo "AWS configured"
 
+    - name: Check DVC Repo
+      run: |
+        pwd
+        ls -la
+        dvc doctor
+
     - name: Pull Dataset from DVC
-      run: dvc pull
+      run: dvc pull -r s3remote -v
 
     - name: Train Model
       run: python src/train.py

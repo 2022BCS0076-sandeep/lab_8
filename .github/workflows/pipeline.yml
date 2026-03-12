@@ -14,26 +14,24 @@ jobs:
       AWS_DEFAULT_REGION: ap-south-1
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
-    - name: Setup Python
-      uses: actions/setup-python@v4
+    - uses: actions/setup-python@v4
       with:
         python-version: "3.10"
 
     - name: Install Dependencies
-      run: |
-        pip install dvc[s3] pandas scikit-learn awscli
+      run: pip install dvc[s3] pandas scikit-learn awscli
 
     - name: Verify AWS Access
       run: aws s3 ls
 
-    - name: Add DVC Remote
-      run: dvc remote add -d s3remote s3://bcs76-lab8 || true
+    - name: Configure DVC Remote
+      run: |
+        dvc remote add -d s3remote s3://bcs76-lab8 || true
 
-    - name: Pull Dataset from DVC
-      run: dvc pull
+    - name: Pull Dataset
+      run: dvc pull -v
 
     - name: Train Model
       run: python src/train.py

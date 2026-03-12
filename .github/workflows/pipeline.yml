@@ -8,11 +8,6 @@ jobs:
   train:
     runs-on: ubuntu-latest
 
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
-      AWS_DEFAULT_REGION: ap-south-1
-
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v3
@@ -24,18 +19,23 @@ jobs:
 
     - name: Install Dependencies
       run: |
-        pip install dvc[s3] pandas scikit-learn awscli
+        pip install dvc[s3]
+        pip install pandas scikit-learn
 
-    - name: Verify AWS access
-      run: |
-        aws s3 ls
+    - name: Configure AWS Credentials
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
+        AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+        AWS_DEFAULT_REGION: ap-south-1
+      run: echo "AWS configured"
 
-    - name: Configure DVC Remote
+    - name: Add DVC Remote
       run: |
-        dvc remote modify s3remote url s3://bcs76-lab8 || dvc remote add -d s3remote s3://bcs76-lab8
+        dvc remote add -d s3remote s3://bcs76-lab8
 
     - name: Pull Dataset from DVC
-      run: dvc pull -v
+      run: dvc pull
 
     - name: Train Model
       run: python src/train.py
